@@ -128,7 +128,82 @@ router.get('/hw', function(req,res){
 });
 
 
+router.get('/LCinfo', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM LearningCenter WHERE LCID=?;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+router.get('/LCinfodisplay', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM LearningCenter, Address WHERE LearningCenter.LCID = ? AND Address.LCID = ?;";
+  db.mycon.query(sql,[id,id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+
+router.post('/LCinfoupdate', function (req, res) {
+
+  var email=req.body.email;
+  var phone=req.body.phone;
+  var name=req.body.name;
+  var logo=req.body.logo;
+  var desc=req.body.desc;
+  var id=req.body.id;
+  var street=req.body.street;
+  var build=req.body.build;
+  var floor=req.body.floor;
+  var apt=req.body.apt;
+  var city=req.body.city;
+  var area=req.body.area;
+
+  db.mycon.query('UPDATE LearningCenter, Address SET LearningCenter.LCname = ?, LearningCenter.Logo = ?, LearningCenter.Description = ?, LearningCenter.Email = ?,LearningCenter.PhoneNo = ?, Address.Street = ?, Address.BuildingNo= ?, Address.FloorNo=?, Address.AptNo = ?, Address.City= ?, Address.Area = ? WHERE Address.LCID = ? AND LearningCenter.LCID= ? ;',[name,logo,desc,email,phone,street,build,floor,apt,city,area,id,id], function (error, results, fields) {
+    if (error) {
+        res.json({updated:false})
+    }else{
+     
+      res.json({updated:true})
+    }
+  });
+
+});
+
+router.post('/AddCourse', function (req, res) {
+
+  var price=req.body.price;
+  var regfees=req.body.regfees;
+  var name=req.body.name;
+  var std=req.body.std;
+  var end=req.body.end;
+  var id=req.body.id;
+  var cat=req.body.cat;
 
 
+  db.mycon.query('INSERT INTO Course (CourseName,Price,RegFees,StDate,EndDate,LCID,CatName) VALUES (?,?,?,?,?,?,?);',
+  [name,price,regfees,std,end,id,cat], function (error, results, fields) {
+    if (error) {
+        res.json({updated:false})
+        console.log("no: " );
+    }else{
+         console.log("okay: " );
+
+      res.json({updated:true})
+    }
+  });
+
+});
 
 module.exports = router;
