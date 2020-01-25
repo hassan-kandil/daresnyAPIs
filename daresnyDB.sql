@@ -48,8 +48,8 @@ CREATE TABLE Course (
     CourseImage int,
     Price DOUBLE(8,2),
     RegFees DOUBLE(8,2),
-    StDate DATE,
-    EndDate DATE,
+    StDate VARCHAR(255),
+    EndDate VARCHAR(255),
     Description TEXT,
     Video VARCHAR(255),
     LCID int NOT NULL,
@@ -168,3 +168,5 @@ AS
     (SELECT CourseName, CourseImage, Price, RegFees, StDate, EndDate, Description, Video, LCID, CatName, DATEDIFF(day, StDate, EndDate)
     FROM Course );
 
+INSERT INTO LearningCenter (LCname, Description,Email,PhoneNo) VALUES ("Abdo's lc under her boat","Not an ugly place actually nice","myhat@yourhat.com","1234532");
+INSERT INTO Address (Street, BuildingNo,FloorNo,City,Area,LCID) VALUES ("MOHAMMED","7","6","cAIRO","New Cairo",1);
