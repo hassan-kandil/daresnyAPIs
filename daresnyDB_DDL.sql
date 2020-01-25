@@ -91,11 +91,13 @@ FOREIGN KEY (LCID) REFERENCES LearningCenter(LCID);
 
 CREATE TABLE UserCourse (
     UID int NOT NULL,
-    CatName varchar(255) NOT NULL,
+    CID int NOT NULL,
+    Likes int DEFAULT 0,
+    Enrolls int DEFAULT 0,
 
     FOREIGN KEY (UID) REFERENCES user(UID),
-    FOREIGN KEY (CatName) REFERENCES Category(CatName),
-    PRIMARY KEY(UID,CatName)
+    FOREIGN KEY (CID) REFERENCES Course(CID),
+    PRIMARY KEY(UID,CID)
 
 );
 

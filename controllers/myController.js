@@ -81,12 +81,11 @@ router.get('/getCourses',function(req,res){
   });
 });
 
-  
-
-router.get('/getSMS', function (req, res) {
-  console.log("got get request"); 
-  let sql = "SELECT id, Phone, Body FROM Message WHERE `SentFlag` = 0 ORDER BY `ts` LIMIT 1;"
-  db.mycon.query(sql, function (err, result) {
+router.get('/getCourseInfo', function (req, res) {
+  console.log("got getCourseInfo GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM Course WHERE CID=?;";
+  db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
       res.send(err);
@@ -96,17 +95,16 @@ router.get('/getSMS', function (req, res) {
   });
 });
 
-
-router.get('/sentSMS', function (req, res) {
-  console.log("got sentSMS GET request"); 
+router.get('/getCourseSchedule', function (req, res) {
+  console.log("got getCourseSchedule GET request"); 
   let id =req.query.id;
-  let sql = "UPDATE Message SET SentFlag = 1 WHERE id=?;";
+  let sql = "SELECT * FROM CourseSchedule WHERE CID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
       res.send(err);
     } else {
-      res.json({"result": "Flag updated!"}); 
+      res.json(result); 
     }
   });
 });
@@ -114,7 +112,7 @@ router.get('/sentSMS', function (req, res) {
 router.get('/getAddress', function (req, res) {
   console.log("got getAddress GET request"); 
   let id =req.query.id;
-  let sql = "SELECT * FROM Address WHERE LCID=1;";
+  let sql = "SELECT * FROM Address WHERE LCID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
