@@ -43,15 +43,18 @@ router.post('/registerUser', function (req, res) {
          });
  
        }
+
+        res.send({
+          "result":"Done",
+          "id": result.insertId
+      });
+
     }
       });
 
-      console.log("userId outside " + userId);
 
 
-  
 
-    return res.json({"result":"Done"});
   });
 
 
@@ -104,6 +107,20 @@ router.get('/sentSMS', function (req, res) {
       res.send(err);
     } else {
       res.json({"result": "Flag updated!"}); 
+    }
+  });
+});
+
+router.get('/getAddress', function (req, res) {
+  console.log("got getAddress GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM Address WHERE LCID=1;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.json(result[0]); 
     }
   });
 });
