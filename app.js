@@ -1,5 +1,10 @@
+var path = require('path');
 var express = require('express');
 var app = express();
+
+app.use(express.static(__dirname + '/uploads'));// you can access image 
+
+app.use('/images/', express.static(__dirname+'/uploads/'));
 
 app.use(function(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");

@@ -53,6 +53,31 @@ router.post('/registerUser', function (req, res) {
 
     return res.json({"result":"Done"});
   });
+
+
+router.get('/getCategories',function(req,res){
+    console.log("got getCategories get request");
+    db.mycon.query("SELECT * FROM Category", function(err, result){
+      if(err){
+        res.send(err);
+      }else{
+        res.json(result);
+      }
+    });
+});
+
+
+router.get('/getCourses',function(req,res){
+  console.log("got getCourses get request");
+  db.mycon.query("SELECT * FROM Course", function(err, result){
+    if(err){
+      res.send(err);
+    }else{
+      res.json(result);
+    }
+  });
+});
+
   
 
 router.get('/getSMS', function (req, res) {
@@ -86,7 +111,9 @@ router.get('/sentSMS', function (req, res) {
 router.post('/login', function (req, res) {
 
   var email=req.body.Email;
-  var password=req.body.password;
+  var password=req.body.Password;
+  console.log("got login request");
+
  
  
   db.mycon.query('SELECT * FROM user WHERE Email = ?',[email], function (error, results, fields) {
@@ -99,7 +126,9 @@ router.post('/login', function (req, res) {
      
       if(results.length >0){
         // decryptedString = cryptr.decrypt(results[0].password);
-          if(password==results[0].password){
+        console.log("password results "+ results[0].Pass)
+        console.log("password sent "+ password)
+          if(password==results[0].Pass){
               res.json({
                   status:true,
                   message:'successfully authenticated'
@@ -125,6 +154,37 @@ router.post('/login', function (req, res) {
 
 router.get('/hw', function(req,res){
   console.log("got hw request")
+});
+
+router.get('/',function(req,res){
+	res.end("Node-File-Upload");
+
+});
+router.post('/upload', function(req, res) {
+	console.log(req.files.image.originalFilename);
+	console.log(req.files.image.path);
+		fs.readFile(req.files.image.path, function (err, data){
+		var dirname = "/home/rajamalw/Node/file-upload";
+		var newPath = dirname + "/uploads/" + 	req.files.image.originalFilename;
+		fs.writeFile(newPath, data, function (err) {
+		if(err){
+		res.json({'response':"Error"});
+		}else {
+		res.json({'response':"Saved"});
+}
+});
+});
+});
+
+
+
+router.get('/uploads/:file', function (req, res){
+		file = req.params.file;
+		var dirname = "/home/rajamalw/Node/file-upload";
+		var img = fs.readFileSync(dirname + "/uploads/" + file);
+		res.writeHead(200, {'Content-Type': 'image/jpg' });
+		res.end(img, 'binary');
+
 });
 
 
