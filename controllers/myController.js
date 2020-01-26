@@ -217,7 +217,7 @@ router.post('/login', function (req, res) {
 
  
  
-  db.mycon.query('SELECT * FROM user WHERE Email = ?',[email], function (error, results, fields) {
+  db.mycon.query('SELECT * FROM user WHERE Email = ?;',[email], function (error, results, fields) {
     if (error) {
         res.json({
           status:false,
@@ -230,9 +230,12 @@ router.post('/login', function (req, res) {
         console.log("password results "+ results[0].Pass)
         console.log("password sent "+ password)
           if(password==results[0].Pass){
+            console.log("returned ")
               res.json({
                   status:true,
-                  message:'successfully authenticated'
+                  message:'successfully authenticated',
+                  isadmin : results[0].isAdmin,
+                  lcid:results[0].LCID
               })
           }else{
               res.json({
