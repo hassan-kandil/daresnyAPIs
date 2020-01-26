@@ -11,7 +11,7 @@ INSERT INTO category (CatName) VALUES ("Cooking");
 
 
 INSERT INTO `learningcenter`(`LCname`, `Logo`, `Description`, `Email`, `PhoneNo`,CatName) 
-VALUES ("ABC Center","abc-center.svg","ABC Center teaches graphic design courses.","abc-center@live.com","0122321332","Graphic Design");
+VALUES ("ABC Center","abc-center.jpg","ABC Center teaches graphic design courses.","abc-center@live.com","0122321332","Graphic Design");
 
 INSERT INTO `learningcenter`(`LCname`, `Logo`, `Description`, `Email`, `PhoneNo`,CatName) 
 VALUES ("IDE Academy","ide-academy.png","IDE Academy teaches programming courses","ide-academy@gmail.com","0122329332","Programming");
@@ -105,4 +105,9 @@ VALUES
 (37,1,1),
 (37,2,1),
 (37,3,1);
+
+
+
+DELETE FROM userlikescourse WHERE UID=? AND CID=?;
+
 

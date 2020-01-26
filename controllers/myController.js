@@ -30,6 +30,8 @@ router.post('/registerUser', function (req, res) {
     if(err){
       res.send(err);
     }else{
+
+      if(result.length > 0){
       
 
       for(var i = 0; i < Perferences.length; i++) {
@@ -45,9 +47,18 @@ router.post('/registerUser', function (req, res) {
        }
 
         res.send({
-          "result":"Done",
-          "id": result.insertId
+          "status": true,
+          "id": result.insertId,
+          "message": "User registered successfully"
       });
+
+    }else{
+      res.send({
+        "status": false,
+        "id":0,
+        "message": "Email already exists"
+      });
+    }
 
     }
       });
@@ -134,13 +145,35 @@ router.get('/getCourseInfo', function (req, res) {
   console.log("got getCourseInfo GET request"); 
   let id =req.query.id;
   console.log("id " + id);
-  let sql = "SELECT CLC.* , A.* FROM CourseLearningCenter CLC, Address A  WHERE CLC.LCID=A.LCID;";
+  let sql = "SELECT CLC.* , A.* FROM CourseLearningCenter CLC, Address A  WHERE CLC.LCID=A.LCID AND CLC.CID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
       res.send(err);
     } else {
       res.json(result[0]); 
+    }
+  });
+});
+
+
+router.get('/getRecommendedCourses', function (req, res) {
+  console.log("got getCourseInfo GET request"); 
+  let id =req.query.id;
+  console.log("id " + id);
+  let sql = "SELECT C.CID, C.CourseName, C.CourseImage, C.CatName, C.Price, C.LCID, C.LCname\
+  FROM CourseLearningCenter C, UserCategory UC \
+  WHERE C.CatName = UC.CatName\
+  AND UC.UID=37\
+  ORDER BY RAND()\
+  LIMIT 5;"
+
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.json(result); 
     }
   });
 });
@@ -220,6 +253,125 @@ router.post('/login', function (req, res) {
 
 });
 
+
+router.get('/addToFavorites', function (req, res) {
+  console.log("got post request"); 
+  var sql = "INSERT INTO userlikescourse (UID,CID,Likes) VALUES (?,?,1);"
+  let uid = req.query.uid;
+  let cid = req.query.cid;
+
+  db.mycon.query(sql, [uid,cid],function (err, result) {
+
+
+
+    if(err){
+      res.send(err);
+    }else{
+      res.send({
+        "status":true,
+        "message": "Course added to user favorites"
+    });
+
+    }
+      });
+
+
+
+
+  });
+
+  router.get('/addToFavorites', function (req, res) {
+  console.log("got post request"); 
+  var sql = "INSERT INTO userlikescourse (UID,CID,Likes) VALUES (?,?,1);"
+  let uid = req.query.uid;
+  let cid = req.query.cid;
+
+  db.mycon.query(sql, [uid,cid],function (err, result) {
+
+    
+
+    if(err){
+      res.send(err);
+    }else{
+      res.send({
+        "status":true,
+        "message": "Course added to user favorites"
+    });
+
+    }
+      });
+
+
+
+
+  });
+
+  
+  router.get('/checkFavorites', function (req, res) {
+    console.log("got post request"); 
+    var sql = "SELECT * FROM userlikescourse WHERE UID=? AND CID=?";
+    let uid = req.query.uid;
+    let cid = req.query.cid;
+  
+    db.mycon.query(sql, [uid,cid],function (err, result) {
+
+  
+      if(err){
+        res.send(err);
+      }else{
+
+        if(result.length>0){
+        res.send({
+          "status":true,
+          "message": "course is in user favorites"
+      });
+
+    }else{
+      res.send({"status":false,
+      "message": "course is not in user favories"
+        });
+    }
+  
+      }
+        });
+  
+  
+  
+  
+    });
+
+  router.get('/removeFromFavorites', function (req, res) {
+      console.log("got post request"); 
+      var sql = "DELETE FROM userlikescourse WHERE UID=? AND CID=?;";
+      let uid = req.query.uid;
+      let cid = req.query.cid;
+    
+      db.mycon.query(sql, [uid,cid],function (err, result) {
+  
+        console.log("result ", JSON.stringify(result));
+        if(err){
+          res.send(err);
+        }else{
+  
+          if(result.affectedRows >0){
+          res.send({
+            "status":true,
+            "message": "course is removed"
+        });
+  
+      }else{
+        res.send({"status":false,
+        "message": "incorrect cid or uid"
+      });
+      }
+    
+        }
+          });
+    
+    
+    
+    
+    });
 router.get('/hw', function(req,res){
   console.log("got hw request")
 });

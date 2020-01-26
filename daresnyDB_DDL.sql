@@ -63,8 +63,8 @@ CREATE TABLE Course (
 CREATE TABLE CourseSchedule(
     CID int NOT NULL,
     Day varchar(255) NOT NULL,
-    StartTime TIME,
-    EndTime TIME,
+    StartTime VARCHAR(255),
+    EndTime VARCHAR(255),
     FOREIGN KEY (CID) REFERENCES Course(CID),
     PRIMARY KEY (CID,Day)
 );
@@ -91,11 +91,20 @@ FOREIGN KEY (LCID) REFERENCES LearningCenter(LCID);
 
 
 
-CREATE TABLE UserCourse (
+CREATE TABLE UserEnrollsCourse (
+    UID int NOT NULL,
+    CID int NOT NULL,
+    Enrolls int DEFAULT 0,
+
+    FOREIGN KEY (UID) REFERENCES user(UID),
+    FOREIGN KEY (CID) REFERENCES Course(CID),
+    PRIMARY KEY(UID,CID)
+
+);
+CREATE TABLE UserEnrollsCourse (
     UID int NOT NULL,
     CID int NOT NULL,
     Likes int DEFAULT 0,
-    Enrolls int DEFAULT 0,
 
     FOREIGN KEY (UID) REFERENCES user(UID),
     FOREIGN KEY (CID) REFERENCES Course(CID),
