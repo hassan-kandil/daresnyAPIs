@@ -146,6 +146,7 @@ router.post('/login', function (req, res) {
               res.json({
                   status:true,
                   message:'successfully authenticated',
+                  UID : results[0].UID,
                   isadmin : results[0].isAdmin,
                   lcid:results[0].LCID
               })
