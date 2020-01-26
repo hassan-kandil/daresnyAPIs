@@ -235,6 +235,7 @@ router.post('/login', function (req, res) {
                   status:true,
                   message:'successfully authenticated',
                   isadmin : results[0].isAdmin,
+                  UID : results[0].UID,
                   lcid:results[0].LCID
               })
           }else{
