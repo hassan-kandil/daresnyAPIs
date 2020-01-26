@@ -1,3 +1,4 @@
+  
 CREATE TABLE user (
     UID int NOT NULL AUTO_INCREMENT,
     Fname varchar(255) NOT NULL,
@@ -7,19 +8,29 @@ CREATE TABLE user (
     Pass VARCHAR(255),
     PhoneNo VARCHAR(255),
     isAdmin int DEFAULT 0,
-    LCID int,
+    LCID int,    
     PRIMARY KEY (UID)
 );
+CREATE TABLE UserCourseExtraInfo(
+     UID int NOT NULL,
+    CID int NOT NULL,
+    KLevel varchar(255),
+    Area  varchar(255),
+    City varchar(255),
 
+    FOREIGN KEY (UID) REFERENCES user(UID),
+    FOREIGN KEY (CID) REFERENCES Course(CID),
+    PRIMARY KEY(UID,CID)
+
+);
 CREATE TABLE LearningCenter (
     LCID int NOT NULL AUTO_INCREMENT,
     LCname varchar(255) NOT NULL,
-    Logo VARCHAR(255),
+    Logo varchar(255),
     Description TEXT,
     Email varchar(255) UNIQUE,
     PhoneNo VARCHAR(255),
     CatName VARCHAR(255),
-    FOREIGN KEY (CatName) REFERENCES Category(CatName),
     PRIMARY KEY (LCID)
 );
 
@@ -40,14 +51,14 @@ CREATE TABLE Address (
 
 CREATE TABLE Category (
     CatName varchar(255) NOT NULL,
-    CatImage varchar(255),
+    CatImage int,
     PRIMARY KEY (CatName)
 );
 
 CREATE TABLE Course (
     CID int NOT NULL AUTO_INCREMENT,
     CourseName varchar(255) NOT NULL,
-    CourseImage varchar(255),
+    CourseImage int,
     Price DOUBLE(8,2),
     RegFees DOUBLE(8,2),
     StDate VARCHAR(255),
@@ -63,8 +74,8 @@ CREATE TABLE Course (
 CREATE TABLE CourseSchedule(
     CID int NOT NULL,
     Day varchar(255) NOT NULL,
-    StartTime VARCHAR(255),
-    EndTime VARCHAR(255),
+    StartTime TIME,
+    EndTime TIME,
     FOREIGN KEY (CID) REFERENCES Course(CID),
     PRIMARY KEY (CID,Day)
 );
@@ -91,20 +102,11 @@ FOREIGN KEY (LCID) REFERENCES LearningCenter(LCID);
 
 
 
-CREATE TABLE UserEnrollsCourse (
-    UID int NOT NULL,
-    CID int NOT NULL,
-    Enrolls int DEFAULT 0,
-
-    FOREIGN KEY (UID) REFERENCES user(UID),
-    FOREIGN KEY (CID) REFERENCES Course(CID),
-    PRIMARY KEY(UID,CID)
-
-);
-CREATE TABLE UserEnrollsCourse (
+CREATE TABLE UserCourse (
     UID int NOT NULL,
     CID int NOT NULL,
     Likes int DEFAULT 0,
+    Enrolls int DEFAULT 0,
 
     FOREIGN KEY (UID) REFERENCES user(UID),
     FOREIGN KEY (CID) REFERENCES Course(CID),
@@ -114,7 +116,7 @@ CREATE TABLE UserEnrollsCourse (
 
 CREATE TABLE UserCategory(
     UID int NOT NULL,
-    CatName varchar(255) NOT NULL,
+    CatName varchar(255) NOT NULL, 
 
     FOREIGN KEY (UID) REFERENCES user(UID),
     FOREIGN KEY (CatName) REFERENCES Category(CatName),
@@ -123,7 +125,7 @@ CREATE TABLE UserCategory(
 );
 
 CREATE TABLE Instructor(
-    INSTID int NOT NULL,
+    INSTID int NOT NULL AUTO_INCREMENT,
     Fname VARCHAR(255),
     Lname VARCHAR(255),
     Bio TEXT,
@@ -141,18 +143,16 @@ CREATE TABLE CourseInstructor (
     PRIMARY KEY(CID,INSTID)
 
 );
+CREATE TABLE UserCourseExtraInfo(
+     UID int NOT NULL,
+    CID int NOT NULL,
+    KLevel varchar(255),
+    Area  varchar(255),
+    City varchar(255),
 
+    FOREIGN KEY (UID) REFERENCES user(UID),
+    FOREIGN KEY (CID) REFERENCES Course(CID),
+    PRIMARY KEY(UID,CID)
 
-CREATE VIEW CourseDuration(CourseName, CourseImage, Price, RegFees, StDate, EndDate, Description, Video, LCID, CatName, Duration)
-AS 
-    (SELECT CourseName, CourseImage, Price, RegFees, StDate, EndDate, Description, Video, LCID, CatName, DATEDIFF(day, StDate, EndDate)
-    FROM Course );
-
-CREATE VIEW CourseLearningCenter
-(CID, CourseName, CourseImage, Price, RegFees, StDate, EndDate, Description, Video, LCID, CatName, LCname, LClogo ,PhoneNo, Email)
-AS 
-(SELECT CID, CourseName, CourseImage, Price, RegFees, StDate, EndDate, C.Description, Video, C.LCID, C.CatName, LCname, Logo, PhoneNo, Email
-FROM Course C, LearningCenter LC
-WHERE C.LCID = LC.LCID);
-
+);
 
