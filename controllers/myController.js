@@ -281,12 +281,14 @@ router.get('/addToFavorites', function (req, res) {
   });
 
   router.get('/addToFavorites', function (req, res) {
-  console.log("got post request"); 
+  console.log("got addToFavorites GET request"); 
   var sql = "INSERT INTO userlikescourse (UID,CID,Likes) VALUES (?,?,1);"
   let uid = req.query.uid;
   let cid = req.query.cid;
 
+
   db.mycon.query(sql, [uid,cid],function (err, result) {
+    console.log("result "+ JSON.stringify(result));
 
     
 
@@ -305,6 +307,43 @@ router.get('/addToFavorites', function (req, res) {
 
 
   });
+
+  router.get('/registerCourse', function (req, res) {
+    console.log("got addToFavorites GET request"); 
+    var sql = "INSERT INTO userenrollscourse (UID,CID,Enrolls) VALUES (?,?,1);"
+    let uid = req.query.uid;
+    let cid = req.query.cid;
+  
+  
+    db.mycon.query(sql, [uid,cid],function (err, result) {
+      console.log("result "+ JSON.stringify(result));
+  
+    
+      if(err){
+        res.send(err);
+      }else{
+
+        if(result.affectedRows > 0){
+        res.send({
+          "status":true,
+          "message": "user registered in course"
+      });
+    }else{
+      res.send({
+        "status":false,
+        "message": "incorrect cid or uid"
+    });
+
+    }
+  
+      }
+        });
+  
+  
+  
+  
+    });
+  
 
   
   router.get('/checkFavorites', function (req, res) {
@@ -327,7 +366,8 @@ router.get('/addToFavorites', function (req, res) {
       });
 
     }else{
-      res.send({"status":false,
+      res.send({
+        "status":false,
       "message": "course is not in user favories"
         });
     }
@@ -341,7 +381,7 @@ router.get('/addToFavorites', function (req, res) {
     });
 
   router.get('/removeFromFavorites', function (req, res) {
-      console.log("got post request"); 
+      console.log("got removeFromFavorites GET request"); 
       var sql = "DELETE FROM userlikescourse WHERE UID=? AND CID=?;";
       let uid = req.query.uid;
       let cid = req.query.cid;
