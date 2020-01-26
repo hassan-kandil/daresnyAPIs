@@ -14,10 +14,12 @@ CREATE TABLE user (
 CREATE TABLE LearningCenter (
     LCID int NOT NULL AUTO_INCREMENT,
     LCname varchar(255) NOT NULL,
-    Logo int,
+    Logo VARCHAR(255),
     Description TEXT,
     Email varchar(255) UNIQUE,
     PhoneNo VARCHAR(255),
+    CatName VARCHAR(255),
+    FOREIGN KEY (CatName) REFERENCES Category(CatName),
     PRIMARY KEY (LCID)
 );
 
@@ -38,14 +40,14 @@ CREATE TABLE Address (
 
 CREATE TABLE Category (
     CatName varchar(255) NOT NULL,
-    CatImage int,
+    CatImage varchar(255),
     PRIMARY KEY (CatName)
 );
 
 CREATE TABLE Course (
     CID int NOT NULL AUTO_INCREMENT,
     CourseName varchar(255) NOT NULL,
-    CourseImage int,
+    CourseImage varchar(255),
     Price DOUBLE(8,2),
     RegFees DOUBLE(8,2),
     StDate VARCHAR(255),
@@ -136,5 +138,12 @@ CREATE VIEW CourseDuration(CourseName, CourseImage, Price, RegFees, StDate, EndD
 AS 
     (SELECT CourseName, CourseImage, Price, RegFees, StDate, EndDate, Description, Video, LCID, CatName, DATEDIFF(day, StDate, EndDate)
     FROM Course );
+
+CREATE VIEW CourseLearningCenter
+(CID, CourseName, CourseImage, Price, RegFees, StDate, EndDate, Description, Video, LCID, CatName, LCname, LClogo ,PhoneNo, Email)
+AS 
+(SELECT CID, CourseName, CourseImage, Price, RegFees, StDate, EndDate, C.Description, Video, C.LCID, C.CatName, LCname, Logo, PhoneNo, Email
+FROM Course C, LearningCenter LC
+WHERE C.LCID = LC.LCID);
 
 

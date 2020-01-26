@@ -69,10 +69,59 @@ router.get('/getCategories',function(req,res){
     });
 });
 
+router.get('/getUserRegisteredCourses',function(req,res){
+  let id = req.query.id;
+  console.log("got getUserRegisteredCourses get request");
+  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM usercourse UC, course C WHERE UC.CID=C.CID AND UC.Enrolls=1 AND UC.UID=? ",[id] ,function(err, result){
+    if(err){
+      res.send(err);
+    }else{
+      res.json(result);
+    }
+  });
+});
+
+
+router.get('/getUserLikedCourses',function(req,res){
+  let id = req.query.id;
+  console.log("got getUserLikedCourses get request");
+  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM usercourse UC, course C WHERE UC.CID=C.CID AND UC.Likes=1 AND UC.UID=? ",[id] ,function(err, result){
+    if(err){
+      res.send(err);
+    }else{
+      res.json(result);
+    }
+  });
+});
+
 
 router.get('/getCourses',function(req,res){
   console.log("got getCourses get request");
-  db.mycon.query("SELECT * FROM Course", function(err, result){
+  db.mycon.query("SELECT CID, Course.CourseName,CourseImage,Price, LearningCenter.LCname, LearningCenter.LCID FROM Course, LearningCenter WHERE Course.LCID=LearningCenter.LCID", function(err, result){
+    if(err){
+      res.send(err);
+    }else{
+      res.json(result);
+    }
+  });
+});
+
+router.get('/getCoursesInCategory',function(req,res){
+  console.log("got getCourses get request");
+  let CatName =req.query.CatName;
+  db.mycon.query("SELECT * FROM Course WHERE CatName=?",[CatName] ,function(err, result){
+    if(err){
+      res.send(err);
+    }else{
+      res.json(result);
+    }
+  });
+});
+
+
+router.get('/getLearningCenters',function(req,res){
+  console.log("got getLearningCenters get request");
+  db.mycon.query("SELECT LCID, LCname, Logo, CatName FROM LearningCenter ", function(err, result){
     if(err){
       res.send(err);
     }else{
@@ -84,7 +133,8 @@ router.get('/getCourses',function(req,res){
 router.get('/getCourseInfo', function (req, res) {
   console.log("got getCourseInfo GET request"); 
   let id =req.query.id;
-  let sql = "SELECT * FROM Course WHERE CID=?;";
+  console.log("id " + id);
+  let sql = "SELECT CLC.* , A.* FROM CourseLearningCenter CLC, Address A  WHERE CLC.LCID=A.LCID;";
   db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
@@ -94,6 +144,9 @@ router.get('/getCourseInfo', function (req, res) {
     }
   });
 });
+
+
+
 
 router.get('/getCourseSchedule', function (req, res) {
   console.log("got getCourseSchedule GET request"); 
@@ -179,8 +232,8 @@ router.post('/upload', function(req, res) {
 	console.log(req.files.image.originalFilename);
 	console.log(req.files.image.path);
 		fs.readFile(req.files.image.path, function (err, data){
-		var dirname = "/home/rajamalw/Node/file-upload";
-		var newPath = dirname + "/uploads/" + 	req.files.image.originalFilename;
+		// var dirname = "/home/rajamalw/Node/file-upload";
+		var newPath = _dirname + "/uploads/" + 	req.files.image.originalFilename;
 		fs.writeFile(newPath, data, function (err) {
 		if(err){
 		res.json({'response':"Error"});
@@ -206,13 +259,14 @@ router.get('/uploads/:file', function (req, res){
 router.get('/LCinfo', function (req, res) {
   console.log("got LC GET request"); 
   let id =req.query.id;
+  console.log("id " + id);
   let sql = "SELECT * FROM LearningCenter WHERE LCID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
       res.send(err);
     } else {
-      res.send(result); 
+      res.send(result[0]); 
     }
   });
 });
