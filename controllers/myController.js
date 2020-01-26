@@ -409,16 +409,15 @@ router.get('/uploads/:file', function (req, res){
 
 
 router.get('/LCinfo', function (req, res) {
-  console.log("got LC GET request"); 
+    console.log("got LC GET request"); 
   let id =req.query.id;
-  console.log("id " + id);
   let sql = "SELECT * FROM LearningCenter WHERE LCID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
     console.log("Result: " + JSON.stringify(result));
     if(err){
       res.send(err);
     } else {
-      res.send(result[0]); 
+      res.send(result); 
     }
   });
 });
@@ -471,16 +470,178 @@ router.post('/AddCourse', function (req, res) {
   var end=req.body.end;
   var id=req.body.id;
   var cat=req.body.cat;
+  var insFname=req.body.insFname;
+  var insLname=req.body.insLname;
+  var insBio=req.body.insBio;
+  var sun = req.body.sun;
+  var mon = req.body.mon;
+  var tue = req.body.tue;
+  var wed = req.body.wed;
+  var thu = req.body.thu;
+  var fri = req.body.fri;
+  var sat = req.body.sat;
+
+  console.log("got it");
 
 
   db.mycon.query('INSERT INTO Course (CourseName,Price,RegFees,StDate,EndDate,LCID,CatName) VALUES (?,?,?,?,?,?,?);',
   [name,price,regfees,std,end,id,cat], function (error, results, fields) {
+    db.mycon.query('SELECT MAX(CID) as id FROM Course', function (error, results, fields) {   
+    var cid = results[0].id;
+       console.log(cid);
+    db.mycon.query('INSERT INTO Instructor (Fname,Lname,Bio) VALUES (?,?,?);',
+    [insFname,insLname,insBio], function (error, results, fields) {
+      db.mycon.query('SELECT MAX(INSTID) as id FROM Instructor', function (error, results, fields) {   
+        var instid = results[0].id;
+           console.log(instid);
+      db.mycon.query('INSERT INTO CourseInstructor (CID,INSTID) VALUES (?,?);',
+        [cid,instid], function (error, results, fields) {
+          if (sun != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Sunday",?,?);',
+        [cid,sun[0],sun[1]], function (error, results, fields) {
+          if (error) {
+            console.log("no: " );
+        }else{
+             console.log("okay: " );}
+    
+        });
+          }
+          if (mon != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Monday",?,?);',
+        [cid,mon[0],mon[1]], function (error, results, fields) {});
+          }
+          if (tue != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Tuesday",?,?);',
+        [cid,tue[0],tue[1]], function (error, results, fields) {});
+          }
+          if (wed != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Wednesday",?,?);',
+        [cid,wed[0],wed[1]], function (error, results, fields) {});
+          }
+          if (thu != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Thurday",?,?);',
+        [cid,thu[0],thu[1]], function (error, results, fields) {});
+          }
+          if (fri != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Friday",?,?);',
+        [cid,fri[0],fri[1]], function (error, results, fields) {});
+          }
+          if (sat != null){
+            db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Saturday",?,?);',
+        [cid,sat[0],sat[1]], function (error, results, fields) {});
+          }
     if (error) {
         res.json({updated:false})
         console.log("no: " );
     }else{
          console.log("okay: " );
 
+      res.json({updated:true})
+    }
+  });
+    });
+  });
+});
+});
+});
+
+router.get('/LCcourses', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT CourseName, CID FROM Course WHERE LCID = ? ;";
+  db.mycon.query(sql,[id,id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+
+router.get('/LCcourse', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM Course WHERE CID = ? ;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+router.get('/LCcourselikes', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT COUNT(*) FROM UserCourse WHERE CID = ? AND Likes = 1 ;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+router.get('/LCcourseenroll', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT COUNT(*) FROM UserCourse WHERE CID = ? AND Enrolls = 1 ;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+
+router.get('/LCcourseenrollnames', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT user.Fname, user.Lname, user.UID FROM UserCourse, user WHERE UserCourse.CID = ? AND UserCourse.Enrolls = 1  AND UserCourse.UID = user.UID;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+router.get('/LCuserinfo', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM UserCourseExtraInfo, user WHERE user.UID = ? AND UserCourseExtraInfo.UID = ?;";
+  db.mycon.query(sql,[id,id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
+router.post('/Courseupdate', function (req, res) {
+
+  var video=req.body.video;
+  var std=req.body.std;
+  var end=req.body.end;
+  var desc=req.body.desc;
+  var reg=req.body.reg;
+  var price=req.body.price;
+  var id=req.body.id;
+  var name = req.body.name;
+
+  db.mycon.query('UPDATE Course SET CourseName = ?, Video = ?, StDate = ?, EndDate = ?, Description = ?, Price = ?, RegFees= ? WHERE CID= ? ;',[name,video,std,end,desc,price,reg,id], function (error, results, fields) {
+    if (error) {
+           console.log("error " );
+          res.json({updated:false})
+    }else{
+      console.log("updated " );
       res.json({updated:true})
     }
   });
