@@ -72,7 +72,7 @@ router.get('/getCategories',function(req,res){
 router.get('/getUserRegisteredCourses',function(req,res){
   let id = req.query.id;
   console.log("got getUserRegisteredCourses get request");
-  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM usercourse UC, course C WHERE UC.CID=C.CID AND UC.Enrolls=1 AND UC.UID=? ",[id] ,function(err, result){
+  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM userenrollscourse UC, course C WHERE UC.CID=C.CID AND UC.Enrolls=1 AND UC.UID=? ",[id] ,function(err, result){
     if(err){
       res.send(err);
     }else{
@@ -85,7 +85,7 @@ router.get('/getUserRegisteredCourses',function(req,res){
 router.get('/getUserLikedCourses',function(req,res){
   let id = req.query.id;
   console.log("got getUserLikedCourses get request");
-  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM usercourse UC, course C WHERE UC.CID=C.CID AND UC.Likes=1 AND UC.UID=? ",[id] ,function(err, result){
+  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM userlikescourse UC, course C WHERE UC.CID=C.CID AND UC.Likes=1 AND UC.UID=? ",[id] ,function(err, result){
     if(err){
       res.send(err);
     }else{

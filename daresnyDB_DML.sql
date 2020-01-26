@@ -94,7 +94,13 @@ VALUES
     '23:00:00'
 );
 
-INSERT INTO usercourse(UID, CID, Enrolls) 
+INSERT INTO userenrollscourse(UID, CID, Enrolls) 
+VALUES 
+(37,1,1),
+(37,2,1),
+(37,3,1);
+
+INSERT INTO userlikescourse(UID, CID, Likes) 
 VALUES 
 (37,1,1),
 (37,2,1),
