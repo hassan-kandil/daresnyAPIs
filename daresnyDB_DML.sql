@@ -111,3 +111,4 @@ VALUES
 DELETE FROM userlikescourse WHERE UID=? AND CID=?;
 
 
+UPDATE `user` SET `Fname`=?,`Lname`=?,`BDate`=?,`Email`=?,`PhoneNo`=? WHERE UID=?
