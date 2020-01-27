@@ -37,6 +37,7 @@ router.post('/registerUser', function (req, res) {
       if(result.affectedRows > 0){
           userId = result.insertId;
 
+      
 
       for(var i = 0; i < Perferences.length; i++) {
 
@@ -52,18 +53,9 @@ router.post('/registerUser', function (req, res) {
        }
 
         res.send({
-          "status": true,
-          "id": result.insertId,
-          "message": "User registered successfully"
+          "result":"Done",
+          "id": result.insertId
       });
-
-    }else{
-      res.send({
-        "status": false,
-        "id":0,
-        "message": "Email already exists"
-      });
-    }
 
     }
       });
@@ -85,6 +77,7 @@ router.get('/getCategories',function(req,res){
     });
 });
 
+<<<<<<< HEAD
 router.get('/getUserRegisteredCourses',function(req,res){
   let id = req.query.id;
   console.log("got getUserRegisteredCourses get request");
@@ -140,6 +133,12 @@ router.get('/getCoursesInCategory',function(req,res){
 router.get('/getLearningCenters',function(req,res){
   console.log("got getLearningCenters get request");
   db.mycon.query("SELECT LCID, LCname, Logo, CatName FROM LearningCenter ", function(err, result){
+=======
+
+router.get('/getCourses',function(req,res){
+  console.log("got getCourses get request");
+  db.mycon.query("SELECT * FROM Course", function(err, result){
+>>>>>>> 7e3dc668cf92cb32671c9339b9edc0d67a3d1c2a
     if(err){
       res.send(err);
     }else{
@@ -149,34 +148,9 @@ router.get('/getLearningCenters',function(req,res){
 });
 
 router.get('/getCourseInfo', function (req, res) {
-  console.log("got getCourseInfo GET request"); 
   let id =req.query.id;
-  console.log("id " + id);
-  let sql = "SELECT CLC.* , A.* FROM CourseLearningCenter CLC, Address A  WHERE CLC.LCID=A.LCID AND CLC.CID=?;";
+  let sql = "SELECT * FROM Course WHERE CID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
-    console.log("Result: " + JSON.stringify(result));
-    if(err){
-      res.send(err);
-    } else {
-      res.json(result[0]); 
-    }
-  });
-});
-
-
-router.get('/getRecommendedCourses', function (req, res) {
-  console.log("got getCourseInfo GET request"); 
-  let id =req.query.id;
-  console.log("id " + id);
-  let sql = "SELECT C.CID, C.CourseName, C.CourseImage, C.CatName, C.Price, C.LCID, C.LCname\
-  FROM CourseLearningCenter C, UserCategory UC \
-  WHERE C.CatName = UC.CatName\
-  AND UC.UID=37\
-  ORDER BY RAND()\
-  LIMIT 5;"
-
-  db.mycon.query(sql,[id] ,function (err, result) {
-    console.log("Result: " + JSON.stringify(result));
     if(err){
       res.send(err);
     } else {
@@ -184,9 +158,6 @@ router.get('/getRecommendedCourses', function (req, res) {
     }
   });
 });
-
-
-
 
 router.get('/getCourseSchedule', function (req, res) {
   console.log("got getCourseSchedule GET request"); 
@@ -241,8 +212,8 @@ router.post('/login', function (req, res) {
               res.json({
                   status:true,
                   message:'successfully authenticated',
-                  isadmin : results[0].isAdmin,
                   UID : results[0].UID,
+                  isadmin : results[0].isAdmin,
                   lcid:results[0].LCID
               })
           }else{
@@ -264,165 +235,6 @@ router.post('/login', function (req, res) {
 
 });
 
-
-router.get('/addToFavorites', function (req, res) {
-  console.log("got post request"); 
-  var sql = "INSERT INTO userlikescourse (UID,CID,Likes) VALUES (?,?,1);"
-  let uid = req.query.uid;
-  let cid = req.query.cid;
-
-  db.mycon.query(sql, [uid,cid],function (err, result) {
-
-
-
-    if(err){
-      res.send(err);
-    }else{
-      res.send({
-        "status":true,
-        "message": "Course added to user favorites"
-    });
-
-    }
-      });
-
-
-
-
-  });
-
-  router.get('/addToFavorites', function (req, res) {
-  console.log("got addToFavorites GET request"); 
-  var sql = "INSERT INTO userlikescourse (UID,CID,Likes) VALUES (?,?,1);"
-  let uid = req.query.uid;
-  let cid = req.query.cid;
-
-
-  db.mycon.query(sql, [uid,cid],function (err, result) {
-    console.log("result "+ JSON.stringify(result));
-
-    
-
-    if(err){
-      res.send(err);
-    }else{
-      res.send({
-        "status":true,
-        "message": "Course added to user favorites"
-    });
-
-    }
-      });
-
-
-
-
-  });
-
-  router.get('/registerCourse', function (req, res) {
-    console.log("got addToFavorites GET request"); 
-    var sql = "INSERT INTO userenrollscourse (UID,CID,Enrolls) VALUES (?,?,1);"
-    let uid = req.query.uid;
-    let cid = req.query.cid;
-  
-  
-    db.mycon.query(sql, [uid,cid],function (err, result) {
-      console.log("result "+ JSON.stringify(result));
-  
-    
-      if(err){
-        res.send(err);
-      }else{
-
-        if(result.affectedRows > 0){
-        res.send({
-          "status":true,
-          "message": "user registered in course"
-      });
-    }else{
-      res.send({
-        "status":false,
-        "message": "incorrect cid or uid"
-    });
-
-    }
-  
-      }
-        });
-  
-  
-  
-  
-    });
-  
-
-  
-  router.get('/checkFavorites', function (req, res) {
-    console.log("got post request"); 
-    var sql = "SELECT * FROM userlikescourse WHERE UID=? AND CID=?";
-    let uid = req.query.uid;
-    let cid = req.query.cid;
-  
-    db.mycon.query(sql, [uid,cid],function (err, result) {
-
-  
-      if(err){
-        res.send(err);
-      }else{
-
-        if(result.length>0){
-        res.send({
-          "status":true,
-          "message": "course is in user favorites"
-      });
-
-    }else{
-      res.send({
-        "status":false,
-      "message": "course is not in user favories"
-        });
-    }
-  
-      }
-        });
-  
-  
-  
-  
-    });
-
-  router.get('/removeFromFavorites', function (req, res) {
-      console.log("got removeFromFavorites GET request"); 
-      var sql = "DELETE FROM userlikescourse WHERE UID=? AND CID=?;";
-      let uid = req.query.uid;
-      let cid = req.query.cid;
-    
-      db.mycon.query(sql, [uid,cid],function (err, result) {
-  
-        console.log("result ", JSON.stringify(result));
-        if(err){
-          res.send(err);
-        }else{
-  
-          if(result.affectedRows >0){
-          res.send({
-            "status":true,
-            "message": "course is removed"
-        });
-  
-      }else{
-        res.send({"status":false,
-        "message": "incorrect cid or uid"
-      });
-      }
-    
-        }
-          });
-    
-    
-    
-    
-    });
 router.get('/hw', function(req,res){
   console.log("got hw request")
 });
@@ -435,8 +247,8 @@ router.post('/upload', function(req, res) {
 	console.log(req.files.image.originalFilename);
 	console.log(req.files.image.path);
 		fs.readFile(req.files.image.path, function (err, data){
-		// var dirname = "/home/rajamalw/Node/file-upload";
-		var newPath = _dirname + "/uploads/" + 	req.files.image.originalFilename;
+		var dirname = "/home/rajamalw/Node/file-upload";
+		var newPath = dirname + "/uploads/" + 	req.files.image.originalFilename;
 		fs.writeFile(newPath, data, function (err) {
 		if(err){
 		res.json({'response':"Error"});
@@ -460,7 +272,7 @@ router.get('/uploads/:file', function (req, res){
 
 
 router.get('/LCinfo', function (req, res) {
-    console.log("got LC GET request"); 
+  console.log("got LC GET request"); 
   let id =req.query.id;
   let sql = "SELECT * FROM LearningCenter WHERE LCID=?;";
   db.mycon.query(sql,[id] ,function (err, result) {
@@ -547,7 +359,7 @@ router.post('/AddCourse', function (req, res) {
         var instid = results[0].id;
            console.log(instid);
       db.mycon.query('INSERT INTO CourseInstructor (CID,INSTID) VALUES (?,?);',
-        [cid,instid], function (error, results, fields) {
+        [cid,instid], function (error, results, fields) {});
           if (sun != null){
             db.mycon.query('INSERT INTO CourseSchedule (CID,Day,StartTime,EndTime) VALUES (?,"Sunday",?,?);',
         [cid,sun[0],sun[1]], function (error, results, fields) {
@@ -590,7 +402,6 @@ router.post('/AddCourse', function (req, res) {
 
       res.json({updated:true})
     }
-  });
     });
   });
 });
@@ -700,4 +511,17 @@ router.post('/Courseupdate', function (req, res) {
 
 });
 
+router.get('/userinfo', function (req, res) {
+  console.log("got LC GET request"); 
+  let id =req.query.id;
+  let sql = "SELECT * FROM  user  WHERE UID = ?;";
+  db.mycon.query(sql,[id] ,function (err, result) {
+    console.log("Result: " + JSON.stringify(result));
+    if(err){
+      res.send(err);
+    } else {
+      res.send(result); 
+    }
+  });
+});
 module.exports = router;
