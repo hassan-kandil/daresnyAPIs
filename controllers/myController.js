@@ -749,4 +749,23 @@ router.get('/userinfo', function (req, res) {
     }
   });
 });
+router.post('/userupdate', function (req, res) {
+
+  var fname=req.body.fname;
+  var lname=req.body.lname;
+  var email=req.body.email;
+  var phone=req.body.phone;
+  var id=req.body.id;
+
+  db.mycon.query('UPDATE user SET Fname = ?, Lname = ?, Email = ?, PhoneNo = ? WHERE UID= ? ;',[fname,lname,email,phone,id], function (error, results, fields) {
+    if (error) {
+           console.log("error " );
+          res.json({updated:false})
+    }else{
+      console.log("updated " );
+      res.json({updated:true})
+    }
+  });
+
+});
 module.exports = router;
