@@ -15,30 +15,35 @@ router.post('/registerUser', function (req, res) {
   let Fname = body.Fname;
   let Lname = body.Lname;
   let Email = body.Email;
+  console.log(JSON.stringify(req.body));
+
 
   let Pass = body.Pass;
   //var encryptedString = cryptr.encrypt(body.Pass);
 
   let PhoneNo = body.PhoneNo;
   let Perferences = body.Categories;
+  console.log("Categories  " + JSON.stringify(Perferences));
   let userId;
 
   db.mycon.query(sql, [Fname,Lname,Email,Pass, PhoneNo],function (err, result) {
-    console.log("Result: " + result.insertId);
-    userId = result.insertId
-    console.log("userId 1 " + userId);
+   // console.log("Result: " + result.insertId);
+   // console.log("userId 1 " + userId);
+
     if(err){
       res.send(err);
     }else{
 
-      if(result.length > 0){
-      
+      if(result.affectedRows > 0){
+          userId = result.insertId;
+
 
       for(var i = 0; i < Perferences.length; i++) {
 
- 
+       // console.log("userId 1 " + userId);
+
          db.mycon.query(sql2, [userId,Perferences[i]], function(err,result2){
-           console.log("Perferences Query: "+ JSON.stringify(result2))
+         console.log("Perferences Query: "+ JSON.stringify(result2))
            if(err){
              //res.send(err);
            }
@@ -83,7 +88,7 @@ router.get('/getCategories',function(req,res){
 router.get('/getUserRegisteredCourses',function(req,res){
   let id = req.query.id;
   console.log("got getUserRegisteredCourses get request");
-  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM userenrollscourse UC, course C WHERE UC.CID=C.CID AND UC.Enrolls=1 AND UC.UID=? ",[id] ,function(err, result){
+  db.mycon.query("SELECT C.CID, C.CourseName, C.CourseImage FROM userenrollscourse UC, course C WHERE UC.CID=C.CID AND UC.Enrolls=1 AND UC.UID=? ",[id] ,function(err, result){
     if(err){
       res.send(err);
     }else{
@@ -96,7 +101,7 @@ router.get('/getUserRegisteredCourses',function(req,res){
 router.get('/getUserLikedCourses',function(req,res){
   let id = req.query.id;
   console.log("got getUserLikedCourses get request");
-  db.mycon.query("SELECT C.CourseName, C.CourseImage FROM userlikescourse UC, course C WHERE UC.CID=C.CID AND UC.Likes=1 AND UC.UID=? ",[id] ,function(err, result){
+  db.mycon.query("SELECT C.CID, C.CourseName, C.CourseImage FROM userlikescourse UC, course C WHERE UC.CID=C.CID AND UC.Likes=1 AND UC.UID=? ",[id] ,function(err, result){
     if(err){
       res.send(err);
     }else{
@@ -108,8 +113,10 @@ router.get('/getUserLikedCourses',function(req,res){
 
 router.get('/getCourses',function(req,res){
   console.log("got getCourses get request");
-  db.mycon.query("SELECT CID, Course.CourseName,CourseImage,Price, LearningCenter.LCname, LearningCenter.LCID FROM Course, LearningCenter WHERE Course.LCID=LearningCenter.LCID", function(err, result){
-    if(err){
+ 
+  // db.mycon.query("SELECT Course.*, LearningCenter.LCname, LearningCenter.LCID FROM Course, LearningCenter WHERE Course.LCID=LearningCenter.LCID", function(err, result){
+    db.mycon.query("SELECT CLC.* , A.* FROM CourseLearningCenter CLC, Address A  WHERE CLC.LCID=A.LCID", function(err, result){
+      if(err){
       res.send(err);
     }else{
       res.json(result);
@@ -526,6 +533,7 @@ router.post('/AddCourse', function (req, res) {
   var sat = req.body.sat;
 
   console.log("got it");
+  console.log("req body " + req.body);
 
 
   db.mycon.query('INSERT INTO Course (CourseName,Price,RegFees,StDate,EndDate,LCID,CatName) VALUES (?,?,?,?,?,?,?);',

@@ -11,6 +11,17 @@ CREATE TABLE user (
     PRIMARY KEY (UID)
 );
 
+CREATE TABLE UserCourseExtraInfo(
+     UID int NOT NULL,
+    CID int NOT NULL,
+    KLevel varchar(255),
+    Area  varchar(255),
+    City varchar(255),
+    FOREIGN KEY (UID) REFERENCES user(UID),
+    FOREIGN KEY (CID) REFERENCES Course(CID),
+    PRIMARY KEY(UID,CID)
+);
+
 CREATE TABLE LearningCenter (
     LCID int NOT NULL AUTO_INCREMENT,
     LCname varchar(255) NOT NULL,
@@ -58,6 +69,7 @@ CREATE TABLE Course (
     CatName varchar(255),
     PRIMARY KEY (CID)
 );
+
 
 
 CREATE TABLE CourseSchedule(
@@ -123,7 +135,7 @@ CREATE TABLE UserCategory(
 );
 
 CREATE TABLE Instructor(
-    INSTID int NOT NULL,
+    INSTID int NOT NULL AUTO_INCREMENT,
     Fname VARCHAR(255),
     Lname VARCHAR(255),
     Bio TEXT,
