@@ -393,6 +393,40 @@ router.get('/addToFavorites', function (req, res) {
   
     });
 
+    
+  router.get('/checkRegisteredCourse', function(req, res){
+    console.log("got post request"); 
+    var sql = "SELECT * FROM userenrollscourse WHERE UID=? AND CID=?";
+    let uid = req.query.uid;
+    let cid = req.query.cid;
+  
+    db.mycon.query(sql, [uid,cid],function (err, result) {
+
+  
+      if(err){
+        res.send(err);
+      }else{
+
+        if(result.length>0){
+        res.send({
+          "status":true,
+          "message": "course is in user registered"
+      });
+
+    }else{
+      res.send({
+        "status":false,
+      "message": "course is not in user registered"
+        });
+    }
+  
+      }
+        });
+  
+  
+
+  });
+
   router.get('/removeFromFavorites', function (req, res) {
       console.log("got removeFromFavorites GET request"); 
       var sql = "DELETE FROM userlikescourse WHERE UID=? AND CID=?;";
